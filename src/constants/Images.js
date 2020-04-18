@@ -1,0 +1,1 @@
+export const proAppsFull = require('../images/proAppsFull.png')
