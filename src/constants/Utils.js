@@ -1,5 +1,7 @@
-const { INSPEKT_API } = process.env
+import crypto from "crypto"
 
+import { PROAPPS_API_DEV, PROAPPS_API_PROD } from "./Constants"
+const PROAPPS_API = window.location.hostname === 'localhost' ? PROAPPS_API_DEV : PROAPPS_API_PROD
 
 const mimeTypes = {
     image : 'bmp jpg png gif x-icon ief jpeg svg tiff',
@@ -7,6 +9,7 @@ const mimeTypes = {
     text : 'html plain-base x-c css csv js ejs calendar x-java-source.java n3 richtext tab-separated-value plain',
     audio: 'x-wav x-ms-wma midi basic mpeg3 x-mpeg3 mp3 wav'
 }
+
 
 const Utils = {
     mimeTypes,
@@ -210,14 +213,16 @@ const Utils = {
    
 
     /**
-     * Fetch Inspekt server /api routes with a specific request, method, body(post datas)
+     * Fetch Pro Apps server /api routes with a specific request, method, body(post datas)
      * @param {object} fetchConfig {body, request, method, token}
      * @param {object} options
      *  - acceptHeader (string) : set an Accept header 
      *  - returnStatus (bool) : will add a 'status' key to return object 
      * @return {object} {error, response, status(*opt*)}
      */
-    _fetchApi : async(fetchConfig, options) => {
+    fetchApi : async(fetchConfig, options) => {
+        console.log('fetchConfig', fetchConfig)
+console.log('process.env', process.env)
         const returnStatus = options && options.returnStatus
         const {body, request, method, token} = fetchConfig
         const dateNow = Date.now()
@@ -234,8 +239,7 @@ const Utils = {
                 ...(returnStatus ? {status: 403} : {})
             })
         else {
-            
-            let url = await Promise.resolve(`${INSPEKT_API}?request=${request}&token=${token}`)
+            let url = await Promise.resolve(`${PROAPPS_API}?request=${request}&token=${token}`)
             const isPost = await Promise.resolve((method && method.toLowerCase() === 'post') || !method); 
             let fetchOptions = await Promise.resolve(
                 {
@@ -253,6 +257,7 @@ const Utils = {
                         : undefined
                 }
             )
+            console.log('url', url)
             let fetching = await fetch(url, fetchOptions)
 
             let error = await Promise.resolve(!fetching.ok)
@@ -496,6 +501,29 @@ const Utils = {
         )
     
         return mapping
+    },
+
+
+    /**
+     * 
+     * @param {*} str 
+     * @notice Will provide equivalent results as RN expo-crypto digestStringAsync method
+     */
+    hasher : (str) => {
+        return new Promise((resolve) => {
+            const hash = crypto.createHash('sha256');
+
+            hash.on('readable', () => {
+                const data = hash.read();
+                if (data) {
+                    //console.log(data.toString('hex'));
+                    resolve(data.toString('hex'))
+                }
+            });
+
+            hash.write(str);
+            hash.end();
+        })
     }
     
 }

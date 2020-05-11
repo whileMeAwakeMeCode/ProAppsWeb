@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminAccess from './AdminAccess'
+import AdminAccess from './AdminEntryPoint'
 import { styles, flexAlign, bgColor, txtColor, flex } from '../constants/Styles'
 import { proAppsFull, whiteBg, electroBg } from '../constants/Images'
 import { Parallax, Background } from 'react-parallax'
