@@ -222,7 +222,6 @@ const Utils = {
      */
     fetchApi : async(fetchConfig, options) => {
         console.log('fetchConfig', fetchConfig)
-console.log('process.env', process.env)
         const returnStatus = options && options.returnStatus
         const {body, request, method, token} = fetchConfig
         const dateNow = Date.now()
@@ -230,7 +229,9 @@ console.log('process.env', process.env)
             "LOGIN": true,
             "WAKE_UP": true,
             "CREATE_TESTER_ACCOUNT": true,
-            "REPORT": true
+            "REPORT": true,
+            "require_nonce": true,
+            "web3_login": true
         }
 
         if(!token && !noTokenRequests[request]) 
@@ -525,6 +526,8 @@ console.log('process.env', process.env)
             hash.end();
         })
     }
+
+    
     
 }
 

@@ -40,7 +40,7 @@ class AutoProgressBar extends React.Component {
                     this.setState({progress: newProg > 90 ? 90 : newProg})
                 }, incrementation);
             } else if (active && completed) {
-                // is completed by still active
+                // is completed but still active
                 this.setState({active: false, completed: true})
                 typeof onCompleted === 'function' && onCompleted()
             }

@@ -4,103 +4,166 @@ import Modal from '@material-ui/core/Modal';
 import { Dialog } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import Login from "./Login";
+import Web3 from 'web3'
+import AutoProgressBar from './AutoProgressBar';
+import { Progress } from 'semantic-ui-react';
 
 export default class AdminAccess extends React.Component {
-    adminSortedKeyCodes = "65, 68, 73, 77, 78"  // "admin" chars
-
-    defaultTimer = {
-        started: false,
-        entries: []
-    }
-
-    timer = this.defaultTimer
-
+   
     state = {
-        connected: false
+        connecting: false,
+        nonce: undefined,                   // unique nonce key that client must sign in order to connect
+        nonceSignature: undefined,            // signature of the received nonce key
+        web3Enabled: [],                    // public eth addresses that have been enabled by injected web3 
+        browserHandlesWeb3: false,          // browser-compatibility with web3
+        connecting: false,                  // indicate if user is currently trying to connect
+        nonceRetrieved: false,              // address / nonceKey retrieval
+        nonceSigned: false,                 // indicates if nonce key has been signed
+        connected: false                    // indicate if client is fully connected
     }
 
-    isAdminRequest = async() => {        
-        const sorted = await Utils.sorting(this.timer.entries)
-        return(sorted.join(', ') === this.adminSortedKeyCodes)
-    }
+    OWNER_ADDRESS = "0x21fAC178E0b0df2Db51A06d52B32DE4479a8b3F1";
 
-    handleKeyDown = (event) => {
-        this.timer.entries.push(event.keyCode)
-        if(!this.timer.started) {
-            this.timer.started = true;
-            setTimeout(async() => {
-                // check if "admin" and connect if so ()
-                const openAdminLoginModal = await this.isAdminRequest()
-
-                if (openAdminLoginModal) {
-                    this.destroyKeyDownEvent()
-                    this.setState({openAdminLoginModal})
-                }
-                this.timer = this.defaultTimer
-            }, 2000)
+    initWeb3 = async() => {
+    
+        // Modern dapp browsers...
+        if (window.ethereum) {
+            window.web3 = new Web3(window.ethereum);  
+            try {
+                // Request account access if needed
+                const web3Enabled = await window.ethereum.enable();
+                // Acccounts now exposed
+                this.setState({browserHandlesWeb3: true, web3Enabled});
+            } catch (error) {
+                // User denied account access... 
+                console.error(error)
+            }
         }
+        
+        // Legacy dapp browsers...
+        else if (window.web3) {
+    
+            window.web3 = new Web3(window.web3.currentProvider); 
+            // Acccounts always exposed
+            this.setState({browserHandlesWeb3: true, web3Enabled: window.web3.coinbase});   // TODO : check if coinbase is received here
+
+        }
+        
+        // Non-dapp browsers...
+        else {
+            console.error('Non-Ethereum browser detected. You should consider trying MetaMask!');
+        }
+
+        return true;
     }
 
-    destroyKeyDownEvent = () => {
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-    // componentWillMount deprecated in React 16.3
-    componentDidMount(){
-        document.addEventListener("keydown", this.handleKeyDown);
+   
 
-        // auto destroy keydown event in 10 scd
-        setTimeout(() => {
-            this.destroyKeyDownEvent()
-        }, 10000)
-        console.log("Il n'y a vraiment que les techniciens ou les développeurs qui mettent le nez ici ;) Help yourself, take a seat, relax !")
-    }
-
-    componentWillUnmount() {
-        this.destroyKeyDownEvent()
-    }
-
-    /**
-     * @param {object} credentials : {email;string, hash;string}
-     * @return {boolean} Promise resolving to a boolean *no rejection*
-     */
-    connect = async(credentials) => new Promise(async(resolve) => {
-
+    adminAccess = async() => {
         try {
-            const connection = await Utils.fetchApi({
-                method: "POST",
-                request: "LOGIN",
-                body: credentials
-            },
-            {
-                returnStatus: true
-            })
+            // make sure web3 is enabled and a coinbase is known
+            await this.initWeb3();
 
-            console.log('connection', connection)
+            this.setState({connecting: true});
 
-            this.setState({openAdminLoginModal: !connection.error, connected: connection.status === 200});
+            const {web3Enabled} = this.state;
+            if (web3Enabled && web3Enabled.length) {
+                // request nonce for first enabled address 
+                const {error, response} = await Utils.fetchApi({
+                    request: "require_nonce",
+                    method: "POST",
+                    body: {
+                        coinbase: web3Enabled[0]
+                    }
+                })
 
+                if (error) {
+                    console.log('adminAccess "Cant retrieve nonce key before login" Error reason : ', error)
+                    throw(error);
+                } else {
+                    const {nonce} = response;
 
-            connection.error && console.error("LOGIN ERROR", connection.error);
+                    this.setState({nonceRetrieved: (typeof nonce === 'string') && nonce.length && nonce})
+                    console.log(`nonce retrieved (${nonce}), signing nonce...`);
+                    // sign nonce
+                    window.web3.eth.personal.sign(nonce, this.OWNER_ADDRESS.toLowerCase(), async(error, signature) => {
+                        if (error) console.log('signatureReceiver Error :', error)
+                        else {
+                            this.setState({nonceSigned: true, nonceSignature: signature})
+                            console.log('signature received :', signature);
+                            // transmit to backend for login
+                            const {error:loginErr, response: connected} = await Utils.fetchApi({
+                                request: "web3_login",
+                                method: 'POST',
+                                body: {
+                                    coinbase: web3Enabled[0],
+                                    signature
+                                }
+                            })
 
-            resolve(!connection.error)
+                            if (loginErr) throw(loginErr)
+                            else {
+                                this.setState({connected, connecting: false});
+
+                                typeof this.props.onSuccess === 'function' 
+                                && this.props.onSuccess();
+                            }
+                        }
+                    
+                    });
+                
+                }
+            }
+            else throw('Missing public ethereum address, please connect to an ethereum provider');
 
         } catch(e) {
-            console.log('LOGIN CATCH ERROR', e)
-            resolve(false)
+            console.log('adminAccess Error: ', e)
+            alert(e);
         }
-    })
+    }
+
+    connectProgress = () => {
+        const {nonceRetrieved, nonceSigned, connected} = this.state;
+        return(
+            connected
+            ? 100
+            : (
+                nonceSigned
+                ? 75
+                : (
+                    nonceRetrieved
+                    ? 50
+                    : 25
+                )
+            )
+        )
+    }
 
     render() { 
-        const { openAdminLoginModal, connected } = this.state;
+        console.log('AdminEntryPoint state', this.state)
+        const {
+            connecting
+        } = this.state;
 
         return <div>
-
-            <Login 
-                open={openAdminLoginModal}
-                onConnect={this.connect}  
-                connected={connected}  
-            />
-                
+            <button 
+                onClick={this.adminAccess}
+            >
+                ADMIN
+            </button>
+            
+            {
+                connecting
+                ? <Progress
+                    active={connecting}
+                    //key={Utils.keyExtractor()}
+                    indicating={true}
+                    percent={this.connectProgress()}
+                    color={"orange"}
+                />
+                : null
+            }
+               
         </div>
     }
 }
