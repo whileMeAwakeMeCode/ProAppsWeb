@@ -116,7 +116,7 @@ export default class AdminAccess extends React.Component {
                 
                 }
             }
-            else throw('Missing public ethereum address, please connect to an ethereum provider');
+            else throw(new Error('Missing public ethereum address, please connect to an ethereum provider'));
 
         } catch(e) {
             console.log('adminAccess Error: ', e)
