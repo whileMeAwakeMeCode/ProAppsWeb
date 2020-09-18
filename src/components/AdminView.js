@@ -1,8 +1,7 @@
 import React from 'react';
-import { styles, flexAlign, bgColor, txtColor, flex } from '../constants/Styles'
-import { proAppsFull, electroBg } from '../constants/Images'
-import { Parallax } from 'react-parallax'
-import Colors from '../constants/Colors';
+import { flexAlign, bgColor } from '../constants/Styles'
+import { proAppsFull } from '../constants/Images'
+
 
 const ClientsView = () => <div>
     <div style={{...flexAlign('flex-start', 'center'), ...bgColor('darkAnthracite')}}>

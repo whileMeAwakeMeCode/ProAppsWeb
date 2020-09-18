@@ -1,13 +1,7 @@
 import React from 'react';
 import Utils from '../constants/Utils';
 import { bgColor, flexAlign } from '../constants/Styles'
-
-import Modal from '@material-ui/core/Modal';
-import { Dialog } from '@material-ui/core';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import Login from "./Login";
 import Web3 from 'web3'
-import AutoProgressBar from './AutoProgressBar';
 import { Progress } from 'semantic-ui-react';
 
 
@@ -15,7 +9,6 @@ export default class AdminAccess extends React.Component {
    
     state = {
         isOwner: false,                     // know if web3 1st enabled address is the owner
-        connecting: false,                  // know if client is connecting via web3
         nonce: undefined,                   // unique nonce key that client must sign in order to connect
         nonceSignature: undefined,          // signature of the received nonce key
         web3Enabled: [],                    // public eth addresses that have been enabled by injected web3 
