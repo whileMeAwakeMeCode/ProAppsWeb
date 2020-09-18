@@ -222,9 +222,9 @@ const Utils = {
      */
     fetchApi : async(fetchConfig, options) => {
         console.log('fetchConfig', fetchConfig)
-        const returnStatus = options && options.returnStatus
-        const {body, request, method, token} = fetchConfig
-        const dateNow = Date.now()
+        const returnStatus = options && options.returnStatus;
+        const {body, request, method, token} = fetchConfig;
+        const dateNow = Date.now();
         const noTokenRequests = {
             "LOGIN": true,
             "WAKE_UP": true,
@@ -241,7 +241,7 @@ const Utils = {
             })
         else {
             let url = await Promise.resolve(`${PROAPPS_API}?request=${request}&token=${token}`)
-            const isPost = await Promise.resolve((method && method.toLowerCase() === 'post') || !method); 
+            const isPost = await Promise.resolve((method && (method.toLowerCase() === 'post')) || !method); 
             let fetchOptions = await Promise.resolve(
                 {
                     method: method || 'POST',
@@ -259,6 +259,7 @@ const Utils = {
                 }
             )
             console.log('url', url)
+            console.log('fetchOptions', fetchOptions)
             let fetching = await fetch(url, fetchOptions)
 
             let error = await Promise.resolve(!fetching.ok)
