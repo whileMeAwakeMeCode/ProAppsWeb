@@ -88,7 +88,7 @@ export default class AdminAccess extends React.Component {
                     this.setState({nonceRetrieved: (typeof nonce === 'string') && nonce.length && nonce})
                     console.log(`nonce retrieved (${nonce}), signing nonce...`);
                     // sign nonce
-                    window.web3.eth.personal.sign(nonce.toString(), this.OWNER_ADDRESS.toLowerCase(), async(error, signature) => {
+                    window.web3.eth.personal.sign(`${nonce}`, this.OWNER_ADDRESS.toLowerCase(), async(error, signature) => {
                         if (error) console.log('signatureReceiver Error :', error)
                         else {
                             this.setState({nonceSigned: true, nonceSignature: signature})
