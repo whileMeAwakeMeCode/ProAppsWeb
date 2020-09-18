@@ -163,7 +163,7 @@ export default class AdminAccess extends React.Component {
                     connected
                     ? null
                     : <button 
-                        onClick={this.adminAccess}
+                        onClick={this.adminAccess} 
                     >
                         <b>Login</b>
                     </button>
