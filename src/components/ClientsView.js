@@ -12,7 +12,7 @@ const ClientsView = () => <div>
                 
             <h2 className="titleText textShadow" style={{...txtColor('proAppsOrange'), position: 'relative', top: -40}}>Développeur web, mobile, bureau, blockchain</h2>
         </div>
-        <p className="centered" style={txtColor('white')}># numérisons votre activité</p>
+        <p className="centered" style={txtColor('white')}># site en construction</p>
         
     </div>
 
@@ -24,7 +24,7 @@ const ClientsView = () => <div>
     
     <div style={{height: '100vh', ...bgColor('white')}}>
 
-
+        
 
     </div>
 </div>

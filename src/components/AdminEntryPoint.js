@@ -1,5 +1,7 @@
 import React from 'react';
 import Utils from '../constants/Utils';
+import { bgColor, flexAlign } from '../constants/Styles'
+
 import Modal from '@material-ui/core/Modal';
 import { Dialog } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
@@ -8,12 +10,14 @@ import Web3 from 'web3'
 import AutoProgressBar from './AutoProgressBar';
 import { Progress } from 'semantic-ui-react';
 
+
 export default class AdminAccess extends React.Component {
    
     state = {
-        connecting: false,
+        isOwner: false,                     // know if web3 1st enabled address is the owner
+        connecting: false,                  // know if client is connecting via web3
         nonce: undefined,                   // unique nonce key that client must sign in order to connect
-        nonceSignature: undefined,            // signature of the received nonce key
+        nonceSignature: undefined,          // signature of the received nonce key
         web3Enabled: [],                    // public eth addresses that have been enabled by injected web3 
         browserHandlesWeb3: false,          // browser-compatibility with web3
         connecting: false,                  // indicate if user is currently trying to connect
@@ -33,7 +37,7 @@ export default class AdminAccess extends React.Component {
                 // Request account access if needed
                 const web3Enabled = await window.ethereum.enable();
                 // Acccounts now exposed
-                this.setState({browserHandlesWeb3: true, web3Enabled});
+                this.setState({browserHandlesWeb3: true, web3Enabled, isOwner: web3Enabled && web3Enabled.length && web3Enabled[0] && web3Enabled[0].toLowerCase() === this.OWNER_ADDRESS.toLowerCase()});
             } catch (error) {
                 // User denied account access... 
                 console.error(error)
@@ -55,6 +59,11 @@ export default class AdminAccess extends React.Component {
         }
 
         return true;
+    }
+
+    async componentDidMount() {
+        await this.initWeb3();
+
     }
 
    
@@ -142,28 +151,38 @@ export default class AdminAccess extends React.Component {
     render() { 
         console.log('AdminEntryPoint state', this.state)
         const {
-            connecting
+            connecting,
+            connected,
+            isOwner
         } = this.state;
 
-        return <div>
-            <button 
-                onClick={this.adminAccess}
-            >
-                ADMIN
-            </button>
-            
-            {
-                connecting
-                ? <Progress
-                    active={connecting}
-                    //key={Utils.keyExtractor()}
-                    indicating={true}
-                    percent={this.connectProgress()}
-                    color={"orange"}
-                />
-                : null
-            }
-               
-        </div>
+        return (
+            isOwner
+            ? <div style={{...bgColor('darkAnthracite'), ...flexAlign("center", "flex-start"), padding: 10}}>
+                {
+                    connected
+                    ? null
+                    : <button 
+                        onClick={this.adminAccess}
+                    >
+                        <b>Login</b>
+                    </button>
+                }
+                
+                {
+                    connecting
+                    ? <Progress
+                        active={connecting}
+                        //key={Utils.keyExtractor()}
+                        indicating={true}
+                        percent={this.connectProgress()}
+                        color={"orange"}
+                    />
+                    : null
+                }
+                
+            </div>
+            : null
+        )
     }
 }
