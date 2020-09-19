@@ -16,7 +16,7 @@ export default class Home extends React.Component {
 
         return (
             <div>
-                <AdminEntryPoint onSuccess={this.toggleAdminView.bind(this)} />
+                <AdminEntryPoint setMessage={this.props.setMessage} onSuccess={this.toggleAdminView.bind(this)} />
                 {
                     adminView
                     ? <AdminView />

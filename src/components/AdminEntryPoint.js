@@ -2,12 +2,18 @@ import React from 'react';
 import Utils from '../constants/Utils';
 import { bgColor, flexAlign } from '../constants/Styles'
 import Web3 from 'web3'
-import { Progress } from 'semantic-ui-react';
+// import { Progress } from 'semantic-ui-react';
+import { Stepper, Step, StepLabel} from '@material-ui/core'
 
+const steps = [ "Enable web3", "retrieve nonce", "sign nonce", "connected"]
 
 export default class AdminAccess extends React.Component {
    
-    state = {
+    defaultState = {
+        message: {
+            text: undefined,
+            severity: undefined
+        },
         isOwner: false,                     // know if web3 1st enabled address is the owner
         nonce: undefined,                   // unique nonce key that client must sign in order to connect
         nonceSignature: undefined,          // signature of the received nonce key
@@ -17,6 +23,19 @@ export default class AdminAccess extends React.Component {
         nonceRetrieved: false,              // address / nonceKey retrieval
         nonceSigned: false,                 // indicates if nonce key has been signed
         connected: false                    // indicate if client is fully connected
+    }
+
+    state = this.defaultState;
+
+    mountDefault = () => {
+        const {connecting, nonceRetrieved, nonceSigned, connected} = this.defaultState;
+
+        return this.setState({
+            connecting, 
+            nonceRetrieved,
+            nonceSigned, 
+            connected
+        })
     }
 
     OWNER_ADDRESS = "0x21fAC178E0b0df2Db51A06d52B32DE4479a8b3F1";
@@ -59,8 +78,6 @@ export default class AdminAccess extends React.Component {
 
     }
 
-   
-
     adminAccess = async() => {
         try {
             // make sure web3 is enabled and a coinbase is known
@@ -80,19 +97,20 @@ export default class AdminAccess extends React.Component {
                 })
 
                 if (error) {
-                    console.log('adminAccess "Cant retrieve nonce key before login" Error reason : ', error)
                     throw(error);
                 } else {
                     const {nonce} = response;
 
                     this.setState({nonceRetrieved: (typeof nonce === 'string') && nonce.length && nonce})
-                    console.log(`nonce retrieved (${nonce}), signing nonce...`);
                     // sign nonce
                     window.web3.eth.personal.sign(nonce, this.OWNER_ADDRESS.toLowerCase(), async(error, signature) => {
-                        if (error) console.log('signatureReceiver Error :', error)
+                        if (error) {
+                            console.log(`ERROR\nsignatureReceiver Error :\n ${error}`)
+                            alert("il y a eu une erreur lors de la signature de la transaction.")
+                            this.mountDefault()
+                        } 
                         else {
                             this.setState({nonceSigned: true, nonceSignature: signature})
-                            console.log('signature received :', signature);
                             // transmit to backend for login
                             const {error:loginErr, response: connected} = await Utils.fetchApi({
                                 request: "web3_login",
@@ -107,6 +125,8 @@ export default class AdminAccess extends React.Component {
                             else {
                                 this.setState({connected, connecting: false});
 
+                          
+
                                 typeof this.props.onSuccess === 'function' 
                                 && this.props.onSuccess();
                             }
@@ -119,8 +139,9 @@ export default class AdminAccess extends React.Component {
             else throw(new Error('Missing public ethereum address, please connect to an ethereum provider'));
 
         } catch(e) {
-            console.log('adminAccess Error: ', e)
-            alert(e);
+            console.log( `Admin Access Error :\n ${e}`)
+            alert("il y a eu une erreur lors de la connexion")
+            this.mountDefault()
         }
     }
 
@@ -141,12 +162,30 @@ export default class AdminAccess extends React.Component {
         )
     }
 
+
+    activeStep = () => {
+        const {nonceRetrieved, nonceSigned, connected} = this.state;
+        return(
+            connected
+            ? 4
+            : (
+                nonceSigned
+                ? 3
+                : (
+                    nonceRetrieved
+                    ? 2
+                    : 1
+                )
+            )
+        )
+    }
+
     render() { 
-        console.log('AdminEntryPoint state', this.state)
         const {
             connecting,
             connected,
-            isOwner
+            isOwner,
+            message
         } = this.state;
 
         return (
@@ -164,15 +203,17 @@ export default class AdminAccess extends React.Component {
                 
                 {
                     connecting
-                    ? <Progress
-                        active={connecting}
-                        //key={Utils.keyExtractor()}
-                        indicating={true}
-                        percent={this.connectProgress()}
-                        color={"orange"}
-                    />
+                    ? <Stepper alternativeLabel activeStep={this.activeStep()}>
+                        {steps.map((label) => (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                        ))}
+                    </Stepper>
                     : null
                 }
+
+       
                 
             </div>
             : null

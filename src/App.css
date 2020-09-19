@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Baloo+Paaji+2|Josefin+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Antic&family=Reenie+Beanie&display=swap');
 
 .App {
   text-align: center;
@@ -15,6 +16,11 @@
   pointer-events: none;
 }
 
+.App-logo-small {
+  height: 7vmin;
+  pointer-events: none;
+}
+
 .App-header {
   height: 70vh;
   display: flex;
@@ -23,6 +29,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  background-color: rgba(41, 41, 41, .8)
 }
 
 .App-link {
@@ -44,14 +51,43 @@
 .josefin, .josephinAll>* {
   font-family: 'Josefin Sans', sans-serif;
 }
+.antic, .anticAll>* {
+  font-family: 'Antic', sans-serif;
+}
+.reenie, .reenieAll>* {
+  font-family: 'Reenie Beanie', cursive;
+}
 .textShadow {
   text-shadow: 6px 6px 1px rgb(41, 41, 41, .8);
+}
+.boxShadow {
+  box-shadow: 6px 6px 15px rgb(41, 41, 41, .25) !important;
 }
 
 /* POSITIONS */
 .centered {
   text-align: center
 }
+
+.flexCenter {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexHalf {
+  flex: .5
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
 
 
 /* EFFECTS */
@@ -61,8 +97,11 @@
 	box-shadow: 0 8px 6px -6px black;
 } */
 
+ @-webkit-keyframes text-pop-up-top{0%{-webkit-transform:translateY(0);transform:translateY(0);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;text-shadow:none}100%{-webkit-transform:translateY(-50px);transform:translateY(-50px);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;text-shadow:0 1px 0 #ccc,0 2px 0 #ccc,0 3px 0 #ccc,0 4px 0 #ccc,0 5px 0 #ccc,0 6px 0 #ccc,0 7px 0 #ccc,0 8px 0 #ccc,0 9px 0 #ccc,0 50px 30px rgba(0,0,0,.3)}}@keyframes text-pop-up-top{0%{-webkit-transform:translateY(0);transform:translateY(0);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;text-shadow:none}100%{-webkit-transform:translateY(-50px);transform:translateY(-50px);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;text-shadow:0 1px 0 #ccc,0 2px 0 #ccc,0 3px 0 #ccc,0 4px 0 #ccc,0 5px 0 #ccc,0 6px 0 #ccc,0 7px 0 #ccc,0 8px 0 #ccc,0 9px 0 #ccc,0 50px 30px rgba(0,0,0,.3)}}
+.text-pop-up-top{-webkit-animation:text-pop-up-top .5s cubic-bezier(.25,.46,.45,.94) both;animation:text-pop-up-top .5s cubic-bezier(.25,.46,.45,.94) both}
 
-
+ @-webkit-keyframes swing-top-fwd{0%{-webkit-transform:rotateX(0);transform:rotateX(0);-webkit-transform-origin:top;transform-origin:top}100%{-webkit-transform:rotateX(180deg);transform:rotateX(180deg);-webkit-transform-origin:top;transform-origin:top}}@keyframes swing-top-fwd{0%{-webkit-transform:rotateX(0);transform:rotateX(0);-webkit-transform-origin:top;transform-origin:top}100%{-webkit-transform:rotateX(180deg);transform:rotateX(180deg);-webkit-transform-origin:top;transform-origin:top}}
+.swing-top-fwd{-webkit-animation:swing-top-fwd .4s cubic-bezier(.25,.46,.45,.94) both;animation:swing-top-fwd .4s cubic-bezier(.25,.46,.45,.94) both}
 
 /* Animation Example
 

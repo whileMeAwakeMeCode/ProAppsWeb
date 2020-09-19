@@ -5,4 +5,5 @@ export default {
     lightAnthracite: '#616161',
     darkAnthracite: "#414141",
     proAppsOrange: "#c4663e",
+    success: "#70e275"
 }
