@@ -58,7 +58,7 @@
   font-family: 'Reenie Beanie', cursive;
 }
 .textShadow {
-  text-shadow: 6px 6px 1px rgb(41, 41, 41, .8);
+  text-shadow: 6px 6px 3px rgb(41, 41, 41, .8);
 }
 .boxShadow {
   box-shadow: 6px 6px 15px rgb(41, 41, 41, .25) !important;

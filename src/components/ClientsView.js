@@ -42,9 +42,32 @@ const topics = [
     {
         title: "Blockchain",
         icon: "ethereum",
-        subtitle: "smart-contracts, applications décentralisées",
+        subtitle: "smart-contracts & applications décentralisées",
         imageSrc: "https://www.everteam.com/wp-content/uploads/2019/02/600shutterstock_1061262521.jpg",
         description: `La dernière grosse révolution en matière d'internet est bel est bien la blockchain. Fini les serveurs, tokénisation et décentralisation sont les mots d'ordre ici.`
+    },
+    {
+        title: "Conception graphique",
+        icon: "paint brush",
+        subtitle: "logos, flyers, bannières & cartes de visite",
+        imageSrc: "https://pbs.twimg.com/media/DZS4d8lX0AADrc7.jpg",
+        description: `Besoin d'une réalisation graphique personnalisée dans un format précis ? on s'en charge dans le respect de votre charte graphique et s'il faut, on la conçoit ensemble.`
+    },
+    // audit
+    {
+        title: "Audit de code",
+        icon: "eye",
+        subtitle: "qualité, sureté & sécurité",
+        imageSrc: "https://kinsta.com/fr/wp-content/uploads/sites/4/2020/03/gardez-vos-retours-instructifs.jpg",
+        description: `Besoin d'un point de vue extérieur ? Nous faisons le tour de votre code et vous rendons un rapport détaillé pour permettre à vos collaborateurs d'apprécier son niveau de qualité et de sécurité`
+    },
+    // formation
+    {
+        title: "Formation & Mentorat",
+        icon: "student",
+        subtitle: "conception, languages & technologies",
+        imageSrc: "https://img5.leboncoin.fr/ad-image/391947a5778ace94c458aeaf556603a25a7a84cd.jpg",
+        description: `Besoin d'une connaissance technique ? Chez ProApps on aime partager, nous assurons des modules de formation personnalisés sur demande, donc il suffit de nous demander ;)`
     },
 ]
 
@@ -58,15 +81,13 @@ const ClientsView = () => {
 
     const resetTopicView = () => setTopicView(-1);
 
- 
-
-    const TopicCard2 = ({title, icon, subtitle, imageSrc, description, index, focused}) => <div onMouseEnter={() => setFocusedOn(index)} onMouseLeave={() => setFocusedOn(-1)} className="column balooAll" style={{padding: '2vw'}}>
+    const TopicCard = ({title, icon, subtitle, imageSrc, description, index, focused}) => <div onMouseEnter={() => setFocusedOn(index)} onMouseLeave={() => setFocusedOn(-1)} className="column balooAll" style={{padding: '1.5vw'}}>
         <Card
             className="boxShadow"
             image={<Reveal animated='move up' className="flexCenter" style={{minHeight: '20vh'}}>
                 <Reveal.Content visible style={{width: '100%'}}>
                     <Image 
-                        style={{height: '20vh', width: '100%', resizeMode: 'cover', borderRadius: 5}} 
+                        style={{height: '20vh', width: '100%', resizeMode: 'cover'}} 
                         //src='https://react.semantic-ui.com/images/avatar/large/stevie.jpg' 
                         src={imageSrc}
                     />
@@ -105,7 +126,7 @@ const ClientsView = () => {
             <div className="flexCenter" style={{height: '100vh', ...bgColor('white'), flexWrap: "wrap"}}>
 
                 {
-                    topics.map((topic, topicIndex) => <TopicCard2
+                    topics.map((topic, topicIndex) => <TopicCard
                         {...topic}
                         index={topicIndex}
                         focused={focusedOn === topicIndex}
