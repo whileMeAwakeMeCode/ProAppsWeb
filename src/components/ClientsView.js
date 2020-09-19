@@ -115,8 +115,8 @@ const ClientsView = () => {
             </div>
         </Slide>
         <Modal
-            open={topicView > 0}
-            header={topicView > 0 && topics[topicView].title}
+            open={topicView >= 0}
+            header={topicView >= 0 && topics[topicView].title}
             content={<div style={{padding: 20}}><h4>Le site est en construction,</h4> Il n'y a pas plus d'informations ici pour le moment, vous pouvez toujours nous contacter :<br /><ul><li>Par téléphone au 07 66 40 32 95</li><li>Par email à <a href="mailto:contact@proapps.fr">contact@proapps.fr</a></li></ul></div>}
             actions={[{ key: 'done', content: 'Compris', icon: {name: 'thumbs up'}, color: "orange", inverted: true, onClick: resetTopicView}]}
         />
