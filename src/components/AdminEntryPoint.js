@@ -185,7 +185,6 @@ export default class AdminAccess extends React.Component {
             connecting,
             connected,
             isOwner,
-            message
         } = this.state;
 
         return (
